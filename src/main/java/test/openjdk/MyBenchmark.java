@@ -31,7 +31,7 @@
 
 package test.openjdk;
 
-import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.*;
 import test.openjdk.client.Foo;
 
 import javax.jws.WebService;
@@ -40,28 +40,31 @@ import java.io.Serializable;
 
 public class MyBenchmark {
 
-    @Benchmark
-    public void testMethod() throws Exception {
-        // This is a demo/sample template for building your JMH benchmarks. Edit as needed.
-        // Put your benchmark code here.
+    @State(Scope.Thread)
+    public static class MyState {
+        Endpoint endpoint;
+        private test.openjdk.client.FooService client;
+        private test.openjdk.client.Foo foo;
 
-        try (AutoCloseable ignore = Endpoint.publish("http://localhost:8888/", new FooServiceImpl())::stop) {
-            test.openjdk.client.FooService client = new test.openjdk.client.FooServiceImplService().getFooServiceImplPort();
-
-            test.openjdk.client.Foo foo = new test.openjdk.client.Foo();
+        @Setup(Level.Trial)
+        public void doSetup() {
+            endpoint = Endpoint.publish("http://localhost:8888/", new FooServiceImpl());
+            System.out.println("Endpoint started");
+            client = new test.openjdk.client.FooServiceImplService().getFooServiceImplPort();
+            foo = new test.openjdk.client.Foo();
             foo.setA("Aaaaaaaaabbbbbbbbbbbccccccccccddddddd");
+        }
 
-            for (int i = 1; i <= 10_000; i++) {
-                String result = client.foo(foo);
-                if (i % 1000 == 0) System.out.println(i + " processed");
-            }
+        @TearDown(Level.Trial)
+        public void doTearDown() {
+            endpoint.stop();
+            System.out.println("Endpoint stopped");
         }
     }
 
-    public static void main(String[] args) {
-        Endpoint.publish("http://localhost:8888/", new FooServiceImpl());
-        test.openjdk.client.FooService client = new test.openjdk.client.FooServiceImplService().getFooServiceImplPort();
-
+    @Benchmark
+    public void testMethod(MyState state) throws Exception {
+        String result = state.client.foo(state.foo);
     }
 
     public static class Foo implements Serializable {
