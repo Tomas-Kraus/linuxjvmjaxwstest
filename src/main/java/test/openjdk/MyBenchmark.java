@@ -2,8 +2,8 @@ package test.openjdk;
 
 import org.openjdk.jmh.annotations.*;
 
-import javax.jws.WebService;
-import javax.xml.ws.Endpoint;
+import jakarta.jws.WebService;
+import jakarta.xml.ws.Endpoint;
 import java.io.Serializable;
 
 public class MyBenchmark {

@@ -1,2 +1,2 @@
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://openjdk.test/")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://openjdk.test/")
 package test.openjdk.client;
