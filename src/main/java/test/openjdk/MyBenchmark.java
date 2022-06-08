@@ -32,7 +32,7 @@ public class MyBenchmark {
 
     @Fork(value = 0, warmups = 0)
     @Warmup(iterations = 3)
-    @Measurement(iterations = 3)    
+    @Measurement(iterations = 10)    
     @Benchmark
     public void testMethod(MyState state) throws Exception {
         String result = state.client.foo(state.foo);
